@@ -1,70 +1,65 @@
-include Makefile.config
+# Makefile
+# --------
+# Copyright : (c) 2012, Jeremie Dimino <jeremie@dimino.org>
+# Licence   : BSD3
+#
+# Generic Makefile for oasis project
 
-all: files/META files/META.${PROJECTNAME}
-	${MAKE} -C syntax
-	${MAKE} -C lib
+# Set to setup.exe for the release
+SETUP := setup-dev.exe
 
-byte: files/META files/META.${PROJECTNAME}
-	${MAKE} -C syntax byte
-	${MAKE} -C lib byte
+ifeq ($(shell ocamlc -v | grep -q "version 3.12"; echo $$?),0)
+# FIX for ocaml version 3.12, link with toplevellib.cma
+TOPLEVEL := toplevellib.cma
+else
+TOPLEVEL := -package compiler-libs.toplevel
+endif
 
-opt: files/META files/META.${PROJECTNAME}
-	${MAKE} -C syntax opt
-	${MAKE} -C lib opt
+# Default rule
+default: build
 
-files/META: files/META.in
-	sed -e "s%__NAME__%${PROJECTNAME}%" \
-            -e "s%__LIBDIR__%%" \
-            -e "s%__SYNTAXDIR__%%" \
-            -e "s%__TCNAME__%${TYPECONVNAME}%" \
-	  $< > $@
+# Setup for the development version
+setup-dev.exe: _oasis setup.ml
+	grep -v '^#' setup.ml > setup_dev.ml
+	ocamlfind ocamlc -o $@ -linkpkg -package ocamlbuild,oasis.dynrun $(TOPLEVEL) setup_dev.ml || true
+	rm -f setup_dev.*
 
-files/META.${PROJECTNAME}: files/META.in
-	sed -e "s%__NAME__%${PROJECTNAME}%" \
-            -e "s%__LIBDIR__%directory = \"../lib\"%" \
-            -e "s%__SYNTAXDIR__%directory = \"../syntax\"%" \
-            -e "s%__TCNAME__%${TYPECONVNAME}%" \
-	  $< > $@
+# Setup for the release
+setup.exe: setup.ml
+	ocamlopt.opt -o $@ $< || ocamlopt -o $@ $< || ocamlc -o $@ $<
+	rm -f setup.cmx setup.cmi setup.o setup.obj setup.cmo
 
-clean: clean.local
-	${MAKE} -C syntax clean DEPEND=no
-	${MAKE} -C lib clean DEPEND=no
-	${MAKE} -C tests clean
-clean.local:
-	-rm -f files/META files/META.${PROJECTNAME}
+build: $(SETUP) setup.data
+	./$(SETUP) -build $(BUILDFLAGS)
 
-distclean: clean.local
-	${MAKE} -C syntax distclean DEPEND=no
-	${MAKE} -C lib distclean DEPEND=no
-	${MAKE} -C tests distclean
-	-rm -f *~ \#* .\#*
+doc: $(SETUP) setup.data build
+	./$(SETUP) -doc $(DOCFLAGS)
 
-.PHONY: tests
-tests:
-	${MAKE} -C tests
-	./tests/tests
+test: $(SETUP) setup.data build
+	./$(SETUP) -test $(TESTFLAGS)
 
-include Makefile.filelist
-VERSION := $(shell head -n 1 VERSION)
+all: $(SETUP)
+	./$(SETUP) -all $(ALLFLAGS)
 
-install:
-	${OCAMLFIND} install ${PROJECTNAME} \
-	  -patch-version ${VERSION} \
-	  files/META ${SYNTAX_INTF} ${INTF} ${IMPL} ${NATIMPL} ${DOC}
+install: $(SETUP) setup.data
+	./$(SETUP) -install $(INSTALLFLAGS)
 
-install-byte:
-	${OCAMLFIND} install ${PROJECTNAME} \
-	  -patch-version ${VERSION} \
-	  files/META ${SYNTAX_INTF} ${INTF} ${IMPL} ${DOC}
+uninstall: $(SETUP) setup.data
+	./$(SETUP) -uninstall $(UNINSTALLFLAGS)
 
-install-opt:
-	${OCAMLFIND} install ${PROJECTNAME} \
-	  -patch-version ${VERSION} \
-	  files/META ${SYNTAX_INTF} ${INTF} ${NATIMPL} ${DOC}
+reinstall: $(SETUP) setup.data
+	./$(SETUP) -reinstall $(REINSTALLFLAGS)
 
-uninstall:
-	${OCAMLFIND} remove ${PROJECTNAME}
+clean: $(SETUP)
+	./$(SETUP) -clean $(CLEANFLAGS)
 
-reinstall: uninstall install
-reinstall-byte: uninstall install-byte
-reinstall-opt: uninstall install-opt
+distclean: $(SETUP)
+	./$(SETUP) -distclean $(DISTCLEANFLAGS)
+
+configure: $(SETUP)
+	./$(SETUP) -configure $(CONFIGUREFLAGS)
+
+setup.data: $(SETUP)
+	./$(SETUP) -configure $(CONFIGUREFLAGS)
+
+.PHONY: default build doc test all install uninstall reinstall clean distclean configure

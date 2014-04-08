@@ -1,5 +1,5 @@
-Deriving-ocsigen
-================
+Deriving (was Deriving-ocsigen)
+===============================
 
 This release of deriving is based on the library by Jeremy Yallop. See:
 
@@ -44,14 +44,14 @@ Examples:
 
 ```
  $ ocaml
-        Objective Caml version 3.12.0
+        Objective Caml version 4.01.0
 
  # #use "topfind";;
  - : unit = ()
  # #camlp4o;;
-	Camlp4 Parsing version 3.12.0
+	Camlp4 Parsing version 4.01.0
 
- # #require "deriving-ocsigen.syntax";;
+ # #require "deriving";;
  # type t = A of int | B of t deriving (Show);;
  type t = A of int | B of t
  module rec Show_t : sig ... end
@@ -64,15 +64,14 @@ Examples with type-conv:
 
 ```
  $ ocaml
-        Objective Caml version 3.12.0
+        Objective Caml version 4.01.0@
 
  # #use "topfind";;
  - : unit = ()
  # #camlp4o;;
-	Camlp4 Parsing version 3.12.0
+	Camlp4 Parsing version 4.01.0
 
- # #require "type-conv";;
- # #require "deriving-ocsigen.syntax_tc";;
+ # #require "deriving.tc";;
  # type t = A of int | B of t with show;;
  type t = A of int | B of t
  module rec Show_t : sig ... end
