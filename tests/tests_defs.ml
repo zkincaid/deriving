@@ -1,15 +1,15 @@
 (* sums (nullary, unary, and n-ary) *)
 type sum = S0 | S1 of int | S2 of int * float | S3 of int * float * bool | Sunit of unit | Stup of (int * float) | Stup1 of (int)
-  deriving (Dump, Eq, Show, Typeable, Pickle)
+  deriving (Dump, Eq, Show, Typeable, Pickle, Compare)
 
 type nullsum = N0 | N1 | N2 | N3
-    deriving (Enum, Bounded, Eq, Typeable, Pickle)
+    deriving (Enum, Bounded, Eq, Typeable, Pickle, Compare)
 
 (* records with mutable and immutable fields (and various combinations) *)
 type r1 = {
   r1_l1 : int;
   r1_l2 : int;
-} deriving (Dump, Eq, Show, Typeable, Pickle, Functor)
+} deriving (Dump, Eq, Show, Typeable, Pickle, Functor, Compare)
 
 type r2 = {
   mutable r2_l1 : int;
@@ -24,7 +24,7 @@ type r3 = {
 (* polymorphic records *)
 type r4 = {
   r4_l1 : 'a . 'a list
-} deriving (Dump, Eq, Show)
+} deriving (Dump, Eq, Show, Compare)
 
 (* label types *)
 type label = x:int -> int
@@ -36,14 +36,14 @@ type funct = int -> int
 
 (* recursive types *)
 type intseq = INil | ICons of int * intseq
-  deriving (Dump, Eq, Show, Typeable, Pickle, Functor)
+  deriving (Dump, Eq, Show, Typeable, Pickle, Functor, Compare)
 
 type 'a seq = Nil | Cons of 'a * 'a seq
-  deriving (Dump, Eq, Show, Functor, Typeable, Pickle)
+  deriving (Dump, Eq, Show, Functor, Typeable, Pickle, Compare)
 
 (* applied type constructors (nullary, n-ary) *)
 type uses_seqs = (intseq * float seq)
-    deriving (Dump, Eq, Show, Typeable, Pickle)
+    deriving (Dump, Eq, Show, Typeable, Pickle, Compare)
 
 (* object and class types *)
 type obj = < x : int >
@@ -53,25 +53,25 @@ class c = object end
 
 (* polymorphic variants (nullary, unary tags, extending complex type expressions, defined inline) *)
 type poly0 = [`T0 | `T1 | `T2 | `T3]
-    deriving (Enum, Bounded, Show, Eq, Typeable, Pickle)
+    deriving (Enum, Bounded, Show, Eq, Typeable, Pickle, Compare)
 
 type poly1 = [`T0 | `T1 of int]
-    deriving (Dump, Eq, Show)
+    deriving (Dump, Eq, Show, Compare)
 
 type poly2 = P of int * [`T0 | `T1 of int] * float
-    deriving (Dump, Eq, Show)
+    deriving (Dump, Eq, Show, Compare)
 
 (* `as'-recursion *)
 type poly3 = [`Nil | `Cons of int * 'c] as 'c
-    deriving (Dump, Eq, Show, Typeable, Pickle)
+    deriving (Dump, Eq, Show, Typeable, Pickle, Compare)
 
 type poly3b = int * ([`Nil | `Cons of int * 'c] as 'c) * [`F]
-    deriving (Dump, Eq, Show, Typeable, Pickle)
+    deriving (Dump, Eq, Show, Typeable, Pickle, Compare)
 
 (* <, >, =, > < polymorphic variants *)
 type 'a poly7 = Foo of [`F of 'a]
 and 'a poly8 = { x : [`G of [`H of [`I of 'a poly7]]] }
-    deriving (Dump, Eq, Show, Functor, Typeable, Pickle)
+    deriving (Dump, Eq, Show, Functor, Typeable, Pickle, Compare)
 
 (*
 type poly9 = [`F | [`G]]
@@ -79,41 +79,41 @@ type poly9 = [`F | [`G]]
   currently broken.
 *)
 type poly10 = [`F | poly3]
-    deriving (Dump, Eq, Show, Functor, Typeable, Pickle)
+    deriving (Dump, Eq, Show, Functor, Typeable, Pickle, Compare)
 
 (* mutually recursive types (monomorphic, polymorphic) *)
 type mutrec_a = mutrec_c
 and mutrec_b = { l1 : mutrec_c ; l2 : mutrec_a }
 and mutrec_c = S of int * mutrec_a | N
 and mutrec_d = [`T of mutrec_b]
-    deriving (Dump, Eq, Show, Typeable, Pickle)
+    deriving (Dump, Eq, Show, Typeable, Pickle, Compare)
 
 type ('a,'b) pmutrec_a = ('a,'b) pmutrec_c
 and ('a,'b) pmutrec_b = { pl1 : ('a,'b) pmutrec_c ; pl2 : ('a,'b) pmutrec_a }
 and ('a,'b) pmutrec_c = SS of 'a * ('a,'b) pmutrec_a * 'b
 and ('a,'b) pmutrec_d = [`T of ('a,'b) pmutrec_b]
-    deriving (Dump, Eq, Show, Functor, Typeable, Pickle)
+    deriving (Dump, Eq, Show, Functor, Typeable, Pickle, Compare)
 
 type 'a pmutrec_a' = ('a,'a) pmutrec_c'
 and ('a,'b) pmutrec_b' = { pl1' : ('b,'a) pmutrec_c' ; pl2' : 'a pmutrec_a' }
 and ('a,'b) pmutrec_c' = SS' of 'a * 'b pmutrec_a' * 'b | TT' of ('a * ('a,'b,'a) pmutrec_d' * 'b)
 and ('a,'b,'c) pmutrec_d' = [ `S of ('a,'b) pmutrec_b' | `T of ('b,'c) pmutrec_b' ]
-    deriving (Dump, Eq, Show, Functor, Typeable, Pickle)
+    deriving (Dump, Eq, Show, Functor, Typeable, Pickle, Compare)
 
 (* polymorphic types *)
-type 'a ff1 = F of 'a * 'a | G of int deriving (Show, Eq, Dump, Functor, Typeable, Pickle)
+type 'a ff1 = F of 'a * 'a | G of int deriving (Show, Eq, Dump, Functor, Typeable, Pickle, Compare)
 type ('a,'b) ff2 = F1 of ('a,'b) ff2 | F2 of 'a seq * int * 'b option
-  deriving (Dump, Eq, Show, Functor, Typeable, Pickle)
+  deriving (Dump, Eq, Show, Functor, Typeable, Pickle, Compare)
 
 (* tuples *)
 type tup0 = unit
-    deriving (Dump, Eq, Show, Typeable, Pickle)
+    deriving (Dump, Eq, Show, Typeable, Pickle, Compare)
 type tup2 = int * float
-    deriving (Dump, Eq, Show, Typeable, Pickle)
+    deriving (Dump, Eq, Show, Typeable, Pickle, Compare)
 type tup3 = int * float * bool
-    deriving (Dump, Eq, Show, Typeable, Pickle)
+    deriving (Dump, Eq, Show, Typeable, Pickle, Compare)
 type tup4 = int * int * bool * unit
-    deriving (Dump, Eq, Show, Typeable, Pickle, Bounded)
+    deriving (Dump, Eq, Show, Typeable, Pickle, Bounded, Compare)
 
 (* type equations (replication) *)
 (* TODO *)
@@ -124,10 +124,10 @@ type withref = WR of int * (int ref)
 
 (* through module boundaries *)
 module rec M : sig
-  type t deriving (Show, Eq, Dump)
+  type t deriving (Show, Eq, Dump, Compare)
 end =
 struct
-  type t = [`N|`C of M.t] deriving (Show, Eq, Dump)
+  type t = [`N|`C of M.t] deriving (Show, Eq, Dump, Compare)
 end
 
 (* parameterized types through module boundaries *)
@@ -160,7 +160,7 @@ end
 
 (* Reusing existing instances *)
 type t = int
-    deriving (Eq, Enum, Bounded, Dump, Show, Typeable, Pickle, Functor)
+    deriving (Eq, Enum, Bounded, Dump, Show, Typeable, Pickle, Functor, Compare)
 
 (* Int32, etc. *)
 
@@ -168,12 +168,12 @@ type ii = {
     int32: int32;
     int64: int64;
     nativeint: nativeint;
-  } deriving (Eq, Dump, Typeable, Pickle, Show)
+  } deriving (Eq, Dump, Typeable, Pickle, Show, Compare)
 
 type ii' = {
     int32': Int32.t;
     int64': Int64.t;
-  } deriving (Eq, Dump, Typeable, Pickle, Show)
+  } deriving (Eq, Dump, Typeable, Pickle, Show, Compare)
 
 #if ocaml_version >= (4, 00)
 

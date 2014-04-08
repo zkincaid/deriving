@@ -10,6 +10,7 @@ OCAMLFLAGS := -w ae
 SOURCES = deriving_Show.ml           \
           deriving_interned.ml       \
           deriving_Eq.ml             \
+          deriving_Compare.ml        \
           deriving_Bounded.ml        \
           deriving_Enum.ml           \
           deriving_monad.ml          \

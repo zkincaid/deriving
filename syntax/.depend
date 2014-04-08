@@ -1,5 +1,3 @@
-base.cmo : utils.cmi type.cmi defs.cmi clusters.cmi base.cmi
-base.cmx : utils.cmx type.cmx defs.cmx clusters.cmx base.cmi
 base.cmi : type.cmi defs.cmi
 clusters.cmo : utils.cmi type.cmi clusters.cmi
 clusters.cmx : utils.cmx type.cmx clusters.cmi
@@ -16,14 +14,12 @@ pa_deriving.cmo :
 pa_deriving.cmx :
 pa_deriving_tc.cmo : type.cmi defs.cmi base.cmi
 pa_deriving_tc.cmx : type.cmx defs.cmx base.cmx
-type.cmo : utils.cmi type.cmi
-type.cmx : utils.cmx type.cmi
 type.cmi : utils.cmi
-utils.cmo : utils.cmi
-utils.cmx : utils.cmi
 utils.cmi :
 classes/bounded_class.cmo : utils.cmi type.cmi defs.cmi base.cmi
 classes/bounded_class.cmx : utils.cmx type.cmx defs.cmx base.cmx
+classes/compare_class.cmo : utils.cmi type.cmi defs.cmi base.cmi
+classes/compare_class.cmx : utils.cmx type.cmx defs.cmx base.cmx
 classes/default_class.cmo : utils.cmi type.cmi defs.cmi base.cmi
 classes/default_class.cmx : utils.cmx type.cmx defs.cmx base.cmx
 classes/dump_class.cmo : utils.cmi type.cmi defs.cmi base.cmi

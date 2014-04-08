@@ -32,10 +32,11 @@ CLASSES := show_class.ml         \
            enum_class.ml         \
            bounded_class.ml      \
            eq_class.ml           \
+           compare_class.ml      \
            typeable_class.ml     \
            pickle_class.ml       \
            functor_class.ml      \
-           default_class.ml      \
+           default_class.ml      
 
 MAIN := pa_deriving.ml
 ifneq (${TYPECONV},)

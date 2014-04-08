@@ -19,6 +19,7 @@ SOURCES = tests_defs.ml         \
 	  typeable_tests.ml     \
 	  bounded_tests.ml      \
 	  eq_tests.ml           \
+	  compare_tests.ml      \
 	  dump_tests.ml         \
 	  enum_tests.ml         \
 	  functor_tests.ml      \
